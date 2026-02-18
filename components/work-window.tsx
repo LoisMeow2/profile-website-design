@@ -39,11 +39,11 @@ export function WorkWindow({ onClose }: WorkWindowProps) {
             <button
               className="w-full rounded-lg overflow-hidden border cursor-pointer transition-transform hover:scale-[1.02] active:scale-[0.98]"
               style={{ borderColor: "var(--border)" }}
-              onClick={() => setFullscreenImage("/images/smallstyle.jpg")}
+              onClick={() => setFullscreenImage("/images/smallstyle.png")}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/components/public/images/smallstyle.jpg"
+                src="/images/smallstyle.png"
                 alt="Small style illustration"
                 className="w-full h-auto object-cover"
               />
@@ -58,11 +58,11 @@ export function WorkWindow({ onClose }: WorkWindowProps) {
             <button
               className="w-full rounded-lg overflow-hidden border cursor-pointer transition-transform hover:scale-[1.02] active:scale-[0.98]"
               style={{ borderColor: "var(--border)" }}
-              onClick={() => setFullscreenImage("/images/refsheet.jpg")}
+              onClick={() => setFullscreenImage("/images/refsheet.png")}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/images/refsheet.jpg"
+                src="/images/refsheet.png"
                 alt="Reference sheet illustration"
                 className="w-full h-auto object-cover"
               />
