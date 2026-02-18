@@ -11,19 +11,18 @@ export async function GET() {
     .from("comments")
     .select(`
       *,
-      likes:likes(count)
+      likes_count:likes(count)
     `)
     .order("created_at", { ascending: false })
 
   if (error) return NextResponse.json({ error }, { status: 500 })
 
-  // Map likes count
   const formatted = data.map((c: any) => ({
     id: c.id,
-    username: c.username,
-    text: c.text,
-    likes: c.likes?.length || 0,
-    liked_by_me: false, // placeholder
+    username: c.user_name, // Map user_name (DB) -> username (Frontend)
+    text: c.content,       // Map content (DB) -> text (Frontend)
+    likes: c.likes_count?.[0]?.count || 0,
+    liked_by_me: false, 
     created_at: c.created_at,
   }))
 
@@ -31,15 +30,21 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const { username, text } = await req.json()
+  try {
+    const { username, text } = await req.json()
 
-  const { data, error } = await supabase
-    .from("comments")
-    .insert({ username, text })
-    .select()
-    .single()
+    const { data, error } = await supabase
+      .from("comments")
+      .insert({ 
+        user_name: username, // Map frontend -> DB
+        content: text        // Map frontend -> DB
+      })
+      .select()
+      .single()
 
-  if (error) return NextResponse.json({ error }, { status: 500 })
-
-  return NextResponse.json({ data })
+    if (error) throw error
+    return NextResponse.json({ data })
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
 }

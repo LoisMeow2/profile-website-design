@@ -24,14 +24,36 @@ export default function Home() {
   const [globalLikes, setGlobalLikes] = useState(0)
   const [globalLiked, setGlobalLiked] = useState(false)
   const loadComments = useCallback(async () => {
-  const res = await fetch("/api/comments")
-  const { data } = await res.json()
-  setComments(data || [])
-}, [])
+  try {
+    const res = await fetch("/api/comments");
+    const json = await res.json();
+    if (json.data) {
+      setComments(json.data);
+    }
+  } catch (err) {
+    console.error("Failed to load comments:", err);
+  }
+}, []);
 
-  useEffect(() => {
-  loadComments()
-}, [loadComments])
+// Initial load
+useEffect(() => {
+  loadComments();
+}, [loadComments]);
+
+const handleAddComment = useCallback(
+  async (username: string, text: string) => {
+    const res = await fetch("/api/comments", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, text }),
+    });
+
+    if (res.ok) {
+      loadComments(); // Refresh list after successful post
+    }
+  },
+  [loadComments]
+);
 
 
   const handleNavClick = useCallback((type: string) => {
@@ -57,21 +79,6 @@ export default function Home() {
   const handleRemoveCard = useCallback((id: string) => {
     setCards((prev) => prev.filter((c) => c.id !== id))
   }, [])
-
-  const handleAddComment = useCallback(
-  async (username: string, text: string) => {
-    await fetch("/api/comments", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, text }),
-    })
-
-    loadComments()
-  },
-  [loadComments]
-)
-
-
 
   const handleLikeComment = useCallback(
   async (commentId: number) => {
