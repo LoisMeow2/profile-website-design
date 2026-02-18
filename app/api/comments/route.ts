@@ -1,20 +1,45 @@
-import { supabase } from "@/lib/supabaseClient";
+import { NextResponse } from "next/server"
+import { createClient } from "@supabase/supabase-js"
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 export async function GET() {
   const { data, error } = await supabase
     .from("comments")
-    .select("*")
-    .order("created_at", { ascending: false });
+    .select(`
+      *,
+      likes:likes(count)
+    `)
+    .order("created_at", { ascending: false })
 
-  return Response.json({ data, error });
+  if (error) return NextResponse.json({ error }, { status: 500 })
+
+  // Map likes count
+  const formatted = data.map((c: any) => ({
+    id: c.id,
+    username: c.username,
+    text: c.text,
+    likes: c.likes?.length || 0,
+    liked_by_me: false, // placeholder
+    created_at: c.created_at,
+  }))
+
+  return NextResponse.json({ data: formatted })
 }
 
 export async function POST(req: Request) {
-  const { user_name, content } = await req.json();
+  const { username, text } = await req.json()
 
   const { data, error } = await supabase
     .from("comments")
-    .insert([{ user_name, content }]);
+    .insert({ username, text })
+    .select()
+    .single()
 
-  return Response.json({ data, error });
+  if (error) return NextResponse.json({ error }, { status: 500 })
+
+  return NextResponse.json({ data })
 }
