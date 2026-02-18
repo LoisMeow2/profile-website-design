@@ -43,7 +43,7 @@ export function WorkWindow({ onClose }: WorkWindowProps) {
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/images/smallstyle.jpg"
+                src="/components/public/images/smallstyle.jpg"
                 alt="Small style illustration"
                 className="w-full h-auto object-cover"
               />
@@ -62,7 +62,7 @@ export function WorkWindow({ onClose }: WorkWindowProps) {
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/images/refsheet.jpg"
+                src="/components/public/images/refsheet.jpg"
                 alt="Reference sheet illustration"
                 className="w-full h-auto object-cover"
               />
