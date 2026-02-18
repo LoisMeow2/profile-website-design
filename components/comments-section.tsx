@@ -22,7 +22,7 @@ function generateUsername(): string {
 }
 
 export interface Comment {
-  id: string
+  id: number
   username: string
   text: string
   likes: number
@@ -33,7 +33,7 @@ export interface Comment {
 interface CommentsSectionProps {
   comments: Comment[]
   onAddComment: (username: string, text: string) => void
-  onLikeComment: (commentId: string) => void
+  onLikeComment: (commentId: number) => void
   totalLikes: number
 }
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { WindowFrame } from "@/components/window-frame"
 import { NavButton } from "@/components/nav-button"
 import { CardRevealSystem, type CardInstance } from "@/components/card-reveal"
@@ -23,6 +23,16 @@ export default function Home() {
   const [comments, setComments] = useState<Comment[]>([])
   const [globalLikes, setGlobalLikes] = useState(0)
   const [globalLiked, setGlobalLiked] = useState(false)
+  const loadComments = useCallback(async () => {
+  const res = await fetch("/api/comments")
+  const { data } = await res.json()
+  setComments(data || [])
+}, [])
+
+  useEffect(() => {
+  loadComments()
+}, [loadComments])
+
 
   const handleNavClick = useCallback((type: string) => {
     cardIdCounter++
@@ -48,31 +58,34 @@ export default function Home() {
     setCards((prev) => prev.filter((c) => c.id !== id))
   }, [])
 
-  const handleAddComment = useCallback((username: string, text: string) => {
-    const newComment: Comment = {
-      id: `temp-${Date.now()}`,
-      username,
-      text,
-      likes: 0,
-      liked_by_me: false,
-      created_at: new Date().toISOString(),
-    }
-    setComments((prev) => [newComment, ...prev])
-  }, [])
+  const handleAddComment = useCallback(
+  async (username: string, text: string) => {
+    await fetch("/api/comments", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, text }),
+    })
 
-  const handleLikeComment = useCallback((commentId: string) => {
-    setComments((prev) =>
-      prev.map((c) =>
-        c.id === commentId
-          ? {
-              ...c,
-              liked_by_me: !c.liked_by_me,
-              likes: c.liked_by_me ? c.likes - 1 : c.likes + 1,
-            }
-          : c
-      )
-    )
-  }, [])
+    loadComments()
+  },
+  [loadComments]
+)
+
+
+
+  const handleLikeComment = useCallback(
+  async (commentId: number) => {
+    await fetch("/api/likes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ comment_id: commentId }),
+    })
+
+    loadComments()
+  },
+  [loadComments]
+)
+
 
   const handleGlobalLike = useCallback(() => {
     setGlobalLiked((prev) => {
