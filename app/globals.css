@@ -1,0 +1,187 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Tropius-inspired earth palette */
+  --background: #f5f0e8;
+  --foreground: #3d2e1f;
+  --card: #fffdf7;
+  --card-foreground: #3d2e1f;
+  --popover: #fffdf7;
+  --popover-foreground: #3d2e1f;
+  --primary: #6b4f36;
+  --primary-foreground: #fffdf7;
+  --secondary: #f5e6a3;
+  --secondary-foreground: #5a4020;
+  --muted: #ece4d4;
+  --muted-foreground: #7a6b5a;
+  --accent: #5b8c5a;
+  --accent-foreground: #fffdf7;
+  --destructive: #c0392b;
+  --destructive-foreground: #fffdf7;
+  --border: #d4c9b5;
+  --input: #d4c9b5;
+  --ring: #6b4f36;
+  --radius: 0.75rem;
+
+  /* Custom tokens */
+  --window-bar: #8b7355;
+  --window-bar-foreground: #fffdf7;
+  --btn-yellow: #f5e6a3;
+  --btn-yellow-hover: #edd574;
+  --wave-dark: #5b8c5a;
+  --wave-light: #a8d5a2;
+  --wave-brown: #8b7355;
+  --tropius-green: #6fa86e;
+  --tropius-brown: #8b6f47;
+}
+
+.dark {
+  --background: #1a1612;
+  --foreground: #ece4d4;
+  --card: #262019;
+  --card-foreground: #ece4d4;
+  --popover: #262019;
+  --popover-foreground: #ece4d4;
+  --primary: #c4a87a;
+  --primary-foreground: #1a1612;
+  --secondary: #4a3d26;
+  --secondary-foreground: #f5e6a3;
+  --muted: #33291e;
+  --muted-foreground: #a89882;
+  --accent: #3d6e3c;
+  --accent-foreground: #d4f0d3;
+  --destructive: #c0392b;
+  --destructive-foreground: #fffdf7;
+  --border: #42372a;
+  --input: #42372a;
+  --ring: #c4a87a;
+
+  --window-bar: #3d3028;
+  --window-bar-foreground: #ece4d4;
+  --btn-yellow: #4a3d26;
+  --btn-yellow-hover: #5c4d32;
+  --wave-dark: #2d5a2c;
+  --wave-light: #3d7a3c;
+  --wave-brown: #3d3028;
+  --tropius-green: #5a9a59;
+  --tropius-brown: #c4a87a;
+}
+
+@theme inline {
+  --font-sans: 'Nunito', 'Nunito Fallback', sans-serif;
+  --font-serif: 'Lilita One', 'Lilita One Fallback', cursive;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback', monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-window-bar: var(--window-bar);
+  --color-window-bar-foreground: var(--window-bar-foreground);
+  --color-btn-yellow: var(--btn-yellow);
+  --color-btn-yellow-hover: var(--btn-yellow-hover);
+  --color-wave-dark: var(--wave-dark);
+  --color-wave-light: var(--wave-light);
+  --color-wave-brown: var(--wave-brown);
+  --color-tropius-green: var(--tropius-green);
+  --color-tropius-brown: var(--tropius-brown);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Pokemon TCG Pocket style ease-in from bottom */
+@keyframes card-slide-in {
+  0% {
+    transform: translateY(100vh) scale(0.95);
+  }
+  60% {
+    transform: translateY(-3%) scale(1.02);
+  }
+  80% {
+    transform: translateY(1%) scale(0.99);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes card-shrink-reveal {
+  0% { transform: scale(1) rotateY(0deg); opacity: 1; }
+  40% { transform: scale(1.05) rotateY(90deg); opacity: 1; }
+  60% { transform: scale(0.3) rotateY(180deg); opacity: 0.5; }
+  100% { transform: scale(0) rotateY(180deg); opacity: 0; }
+}
+
+/* Flip from window back to card */
+@keyframes window-to-card {
+  0% { transform: scale(1) rotateY(0deg); opacity: 1; }
+  50% { transform: scale(0.9) rotateY(90deg); opacity: 0.8; }
+  100% { transform: scale(1) rotateY(180deg); opacity: 1; }
+}
+
+@keyframes card-from-window {
+  0% { transform: scale(1) rotateY(-180deg); opacity: 0; }
+  50% { transform: scale(0.9) rotateY(-90deg); opacity: 0.8; }
+  100% { transform: scale(1) rotateY(0deg); opacity: 1; }
+}
+
+@keyframes firework-burst {
+  0% { transform: scale(0); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.8; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+@keyframes firework-particle {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes window-reveal {
+  0% { transform: scale(0.1); opacity: 0; }
+  50% { transform: scale(1.03); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes wave-sway {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-20px); }
+}
+
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes fade-in-up {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}

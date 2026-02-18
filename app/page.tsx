@@ -1,0 +1,214 @@
+"use client"
+
+import { useState, useCallback } from "react"
+import { WindowFrame } from "@/components/window-frame"
+import { NavButton } from "@/components/nav-button"
+import { CardRevealSystem, type CardInstance } from "@/components/card-reveal"
+import { AboutWindow } from "@/components/about-window"
+import { WorkWindow } from "@/components/work-window"
+import { LinksWindow } from "@/components/links-window"
+import { FAQWindow } from "@/components/faq-window"
+import { Waves } from "@/components/waves"
+import { DarkModeToggle } from "@/components/dark-mode-toggle"
+import { SourcesButton } from "@/components/sources-modal"
+import { CommentsSection, type Comment } from "@/components/comments-section"
+import { GlobalLikeButton } from "@/components/global-like-button"
+
+let cardIdCounter = 0
+
+export default function Home() {
+  const [cards, setCards] = useState<CardInstance[]>([])
+
+  // Comments state (will be replaced with SWR + Supabase)
+  const [comments, setComments] = useState<Comment[]>([])
+  const [globalLikes, setGlobalLikes] = useState(0)
+  const [globalLiked, setGlobalLiked] = useState(false)
+
+  const handleNavClick = useCallback((type: string) => {
+    cardIdCounter++
+    const newCard: CardInstance = {
+      id: `card-${cardIdCounter}`,
+      type,
+      phase: "sliding",
+      zIndex: 30 + cardIdCounter,
+    }
+    setCards((prev) => [...prev, newCard])
+  }, [])
+
+  const handleUpdateCard = useCallback(
+    (id: string, updates: Partial<CardInstance>) => {
+      setCards((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, ...updates } : c))
+      )
+    },
+    []
+  )
+
+  const handleRemoveCard = useCallback((id: string) => {
+    setCards((prev) => prev.filter((c) => c.id !== id))
+  }, [])
+
+  const handleAddComment = useCallback((username: string, text: string) => {
+    const newComment: Comment = {
+      id: `temp-${Date.now()}`,
+      username,
+      text,
+      likes: 0,
+      liked_by_me: false,
+      created_at: new Date().toISOString(),
+    }
+    setComments((prev) => [newComment, ...prev])
+  }, [])
+
+  const handleLikeComment = useCallback((commentId: string) => {
+    setComments((prev) =>
+      prev.map((c) =>
+        c.id === commentId
+          ? {
+              ...c,
+              liked_by_me: !c.liked_by_me,
+              likes: c.liked_by_me ? c.likes - 1 : c.likes + 1,
+            }
+          : c
+      )
+    )
+  }, [])
+
+  const handleGlobalLike = useCallback(() => {
+    setGlobalLiked((prev) => {
+      setGlobalLikes((c) => (prev ? c - 1 : c + 1))
+      return !prev
+    })
+  }, [])
+
+  const totalCommentLikes = comments.reduce((sum, c) => sum + c.likes, 0)
+
+  const renderWindow = useCallback(
+    (
+      type: string,
+      props: { onClose: () => void; zIndex: number }
+    ) => {
+      switch (type) {
+        case "about":
+          return <AboutWindow {...props} />
+        case "work":
+          return <WorkWindow {...props} />
+        case "link":
+          return <LinksWindow {...props} />
+        case "faq":
+          return <FAQWindow {...props} />
+        default:
+          return null
+      }
+    },
+    []
+  )
+
+  return (
+    <div
+      className="relative flex flex-col min-h-screen overflow-x-hidden"
+      style={{ background: "var(--background)" }}
+    >
+      <DarkModeToggle />
+      <Waves />
+
+      <main
+        className="flex-1 flex flex-col items-center justify-start relative px-4 pt-20 md:pt-28 pb-72"
+        style={{ zIndex: 1 }}
+      >
+        {/* Main Window */}
+        <div className="w-full max-w-sm md:max-w-lg lg:max-w-xl">
+          <WindowFrame title="home" showControls={false}>
+            <div className="px-6 pb-6 pt-5">
+              <div className="text-center mb-8">
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight text-balance">
+                  <span style={{ color: "var(--foreground)" }}>{"hey! "}</span>
+                  <span
+                    className="font-serif"
+                    style={{
+                      background:
+                        "linear-gradient(180deg, #c9a84c 0%, #6fa86e 100%)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                    }}
+                  >
+                    {"it's lois"}
+                  </span>
+                </h1>
+                <p
+                  className="text-sm md:text-base mt-2"
+                  style={{ color: "var(--muted-foreground)" }}
+                >
+                  Illustrator, animator and hobbyist
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 md:gap-4">
+                <NavButton
+                  label="about"
+                  icon={<></>}
+                  onClick={() => handleNavClick("about")}
+                />
+                <NavButton
+                  label="work"
+                  icon={<></>}
+                  onClick={() => handleNavClick("work")}
+                />
+                <NavButton
+                  label="link"
+                  icon={<></>}
+                  onClick={() => handleNavClick("link")}
+                />
+                <NavButton
+                  label="faq"
+                  icon={<></>}
+                  onClick={() => handleNavClick("faq")}
+                />
+              </div>
+            </div>
+          </WindowFrame>
+
+          {/* Comments section -- below main window */}
+          <div className="mt-4">
+            <CommentsSection
+              comments={comments}
+              onAddComment={handleAddComment}
+              onLikeComment={handleLikeComment}
+              totalLikes={totalCommentLikes}
+            />
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer
+        className="relative text-center py-4 space-y-1.5"
+        style={{ zIndex: 2 }}
+      >
+        <SourcesButton />
+        <p
+          className="text-xs font-semibold"
+          style={{ color: "var(--secondary)" }}
+        >
+          {"© 2026 Lois Vera Cruz"}
+        </p>
+      </footer>
+
+      {/* Global like button - bottom right */}
+      <GlobalLikeButton
+        count={globalLikes}
+        liked={globalLiked}
+        onLike={handleGlobalLike}
+      />
+
+      {/* Card overlay system */}
+      <CardRevealSystem
+        cards={cards}
+        onUpdateCard={handleUpdateCard}
+        onRemoveCard={handleRemoveCard}
+        renderWindow={renderWindow}
+      />
+    </div>
+  )
+}
