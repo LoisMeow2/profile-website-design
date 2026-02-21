@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server"
-import { supabase } from "@/backend/lib/supabaseClient"
+import { NextResponse } from "next/server";
+import { supabase } from "@/backend/lib/supabaseClient";
 
 export async function GET() {
   const { data, error } = await supabase
