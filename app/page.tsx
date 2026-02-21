@@ -25,7 +25,9 @@ export default function Home() {
   const [globalLiked, setGlobalLiked] = useState(false)
   const loadComments = useCallback(async () => {
   try {
-    const res = await fetch("/api/comments");
+    // OLD: const res = await fetch("/api/comments");
+    // NEW:
+    const res = await fetch("/backend/api/comments");
     const json = await res.json();
     if (json.data) {
       setComments(json.data);
@@ -42,7 +44,7 @@ useEffect(() => {
 
 const handleAddComment = useCallback(
   async (username: string, text: string) => {
-    const res = await fetch("/api/comments", {
+    const res = await fetch("/backend/api/comments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, text }),
@@ -82,7 +84,7 @@ const handleAddComment = useCallback(
 
   const handleLikeComment = useCallback(
   async (commentId: number) => {
-    await fetch("/api/likes", {
+    await fetch("/backend/api/likes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ comment_id: commentId }),
